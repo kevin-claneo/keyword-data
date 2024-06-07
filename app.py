@@ -338,13 +338,9 @@ def main():
           for i in range(num_competitors):
               competitor = st.text_input(f"Enter competitor {i+1}")
               competitors.append(competitor)
-
-          # Checkbox for including organic ranking position and people also search
-          check_seasonality = st.checkbox("Check Seasonality")
-
           
 
-          if st.button("Analyze"):
+          if st.button("Get Keyword Data"):
               # Get search volume
               chunks = chunk_dataframe(df)
               all_sv_results = pd.DataFrame()
