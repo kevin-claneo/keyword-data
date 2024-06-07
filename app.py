@@ -296,63 +296,64 @@ def main():
   setup_streamlit()
   username = st.text_input("DataforSEO Login", help="Get your login credentials here: https://app.dataforseo.com/api-dashboard")
   password = st.text_input('Please enter your DataforSEO API Password', type="password")
-  client = RestClient(str(username), str(password))
-  # Upload Excel file
-  uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx", "xls"])
-  sorted_countries = custom_sort(COUNTRIES, preferred_countries)
-  sorted_languages = custom_sort(LANGUAGES, preferred_languages)
-
-  country = st.selectbox("Country", sorted_countries)
-  language = st.selectbox("Language", sorted_languages)
-  device = st.selectbox("Device", DEVICES)
-
-  if uploaded_file is not None:
-      # Read Excel file into a DataFrame
-      df = pd.read_excel(uploaded_file)
-      df.rename(columns={"Search term": "Keyword", "keyword": "Keyword", "query": "Keyword", "query": "Keyword", "Top queries": "Keyword", "queries": "Keyword", "Keywords": "Keyword","keywords": "Keyword", "Search terms report": "Keyword"}, inplace=True)
-      # Check if the 'Keyword' column exists
-      if 'Keyword' not in df.columns:
-          st.error("Please make sure your Excel file contains a column named 'Keyword'!")
-      else:
-          # Input domain and competitors
-          domain = st.text_input("Enter your domain")
-          num_competitors = st.number_input("Enter the number of competitors", min_value=1, value=1, step=1)
-
-          competitors = []
-          for i in range(num_competitors):
-              competitor = st.text_input(f"Enter competitor {i+1}")
-              competitors.append(competitor)
-          
-
-          if st.button("Get Keyword Data") and username is not None and password is not None:
-              # Get search volume
-              chunks = chunk_dataframe(df)
-              all_sv_results = pd.DataFrame()
-              all_sv_errors = []
-
-              for chunk in chunks:
-                  sv_results, sv_errors = get_search_volume(chunk, client, country, language, device)
-                  all_sv_results = pd.concat([all_sv_results, sv_results])
-                  all_sv_errors.extend(sv_errors)
+  if username and password is not None:
+      client = RestClient(str(username), str(password))
+      # Upload Excel file
+      uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx", "xls"])
+      sorted_countries = custom_sort(COUNTRIES, preferred_countries)
+      sorted_languages = custom_sort(LANGUAGES, preferred_languages)
+    
+      country = st.selectbox("Country", sorted_countries)
+      language = st.selectbox("Language", sorted_languages)
+      device = st.selectbox("Device", DEVICES)
+    
+      if uploaded_file is not None:
+          # Read Excel file into a DataFrame
+          df = pd.read_excel(uploaded_file)
+          df.rename(columns={"Search term": "Keyword", "keyword": "Keyword", "query": "Keyword", "query": "Keyword", "Top queries": "Keyword", "queries": "Keyword", "Keywords": "Keyword","keywords": "Keyword", "Search terms report": "Keyword"}, inplace=True)
+          # Check if the 'Keyword' column exists
+          if 'Keyword' not in df.columns:
+              st.error("Please make sure your Excel file contains a column named 'Keyword'!")
+          else:
+              # Input domain and competitors
+              domain = st.text_input("Enter your domain")
+              num_competitors = st.number_input("Enter the number of competitors", min_value=1, value=1, step=1)
+    
+              competitors = []
+              for i in range(num_competitors):
+                  competitor = st.text_input(f"Enter competitor {i+1}")
+                  competitors.append(competitor)
               
-              sv = pd.DataFrame(all_sv_results)
-
-              # Get ranking positions
-              results, errors = get_ranking_positions(client, sv, country, language, device)
-
-              # Process SERP results
-              report_df, serp_df = process_serp_results(results, sv, domain, competitors)
-              
-              # Display the results
-              st.subheader("Report")
-              show_dataframe(report_df)
-              download_excel_link(report_df, "keyword_analysis_results")
-              
-              top10serp_df = transpose_serp_results(serp_df)
-
-              st.subheader("Top 10 SERP Data")
-              show_dataframe(top10serp_df)
-              download_excel_link(top10serp_df, "top-10_serp_data")
+    
+              if st.button("Get Keyword Data"):
+                  # Get search volume
+                  chunks = chunk_dataframe(df)
+                  all_sv_results = pd.DataFrame()
+                  all_sv_errors = []
+    
+                  for chunk in chunks:
+                      sv_results, sv_errors = get_search_volume(chunk, client, country, language, device)
+                      all_sv_results = pd.concat([all_sv_results, sv_results])
+                      all_sv_errors.extend(sv_errors)
+                  
+                  sv = pd.DataFrame(all_sv_results)
+    
+                  # Get ranking positions
+                  results, errors = get_ranking_positions(client, sv, country, language, device)
+    
+                  # Process SERP results
+                  report_df, serp_df = process_serp_results(results, sv, domain, competitors)
+                  
+                  # Display the results
+                  st.subheader("Report")
+                  show_dataframe(report_df)
+                  download_excel_link(report_df, "keyword_analysis_results")
+                  
+                  top10serp_df = transpose_serp_results(serp_df)
+    
+                  st.subheader("Top 10 SERP Data")
+                  show_dataframe(top10serp_df)
+                  download_excel_link(top10serp_df, "top-10_serp_data")
 
 if __name__ == "__main__":
         main()
