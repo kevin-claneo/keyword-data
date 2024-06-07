@@ -340,7 +340,7 @@ def main():
               competitors.append(competitor)
           
 
-          if st.button("Get Keyword Data") and username is not None and and password is not None:
+          if st.button("Get Keyword Data") and username is not None and password is not None:
               # Get search volume
               chunks = chunk_dataframe(df)
               all_sv_results = pd.DataFrame()
