@@ -85,7 +85,7 @@ def custom_sort(all_items, preferred_items):
   sorted_items = preferred_items + ["_____________"] + [item for item in all_items if item not in preferred_items]
   return sorted_items
 
-def get_search_volume(df_chunk, client, country_name, language_name, device, check_seasonality):
+def get_search_volume(df_chunk, client, country_name, language_name, device):
     sv_results = []
     sv_errors = []
     sv_post_data = [{
@@ -101,21 +101,8 @@ def get_search_volume(df_chunk, client, country_name, language_name, device, che
             for task in sv_response['tasks']:
                 if task['result'] and len(task['result']) > 0:
                     for resultTaskInfo in task['result']:
-                        if check_seasonality:
-                            keyword = resultTaskInfo['keyword']
-                            search_volume = resultTaskInfo['search_volume']
-                            monthly_searches = resultTaskInfo['monthly_searches']
-                            seasonality = any(
-                                month['search_volume'] > search_volume for month in monthly_searches
-                            )
-                            max_sv = max(month['search_volume'] for month in monthly_searches)
-                            months_max_sv = [
-                                month['month'] for month in monthly_searches
-                                if month['search_volume'] == max_sv
-                            ]
-                            sv_results.append([keyword, search_volume, seasonality, max_sv, months_max_sv])
-                        else:
-                            sv_results.append([resultTaskInfo['keyword'], resultTaskInfo['search_volume']])
+                        keyword = resultTaskInfo['keyword']
+                        search_volume = resultTaskInfo['search_volume']
                 else:
                     sv_errors.append(task)
                     st.write(sv_errors)
@@ -125,9 +112,6 @@ def get_search_volume(df_chunk, client, country_name, language_name, device, che
         sv_errors.append(str(e))
         print(sv_errors)
   
-    if check_seasonality:
-        columns = ['keyword', 'search_volume', 'seasonality', 'max_sv', 'months_max_sv']
-    else:
         columns = ['keyword', 'search_volume']
   
     return pd.DataFrame(sv_results, columns=columns), sv_errors
@@ -347,7 +331,7 @@ def main():
               all_sv_errors = []
 
               for chunk in chunks:
-                  sv_results, sv_errors = get_search_volume(chunk, client, country, language, device, check_seasonality)
+                  sv_results, sv_errors = get_search_volume(chunk, client, country, language, device)
                   all_sv_results = pd.concat([all_sv_results, sv_results])
                   all_sv_errors.extend(sv_errors)
               
