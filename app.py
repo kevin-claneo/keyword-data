@@ -3,7 +3,6 @@ import pandas as pd
 import base64
 import io
 import tldextract
-import time
 
 from http.client import HTTPSConnection
 from base64 import b64encode
@@ -406,7 +405,6 @@ def main():
 
           # Checkbox for including organic ranking position and people also search
           check_seasonality = st.checkbox("Check Seasonality")
-          llm_client, model = handle_api_keys()
           
 
           if st.button("Analyze"):
