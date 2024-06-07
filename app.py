@@ -294,8 +294,8 @@ def chunk_dataframe(df, chunk_size=1000):
 
 def main():
   setup_streamlit()
-  username = st.text_input("DataforSEO Login", help="Get your login credentials here: https://app.dataforseo.com/api-dashboard")
-  password = st.text_input('Please enter your DataforSEO API Password', type="password")
+  username = st.text_input("👤 DataforSEO API Login", help="Get your login credentials here: https://app.dataforseo.com/api-dashboard")
+  password = st.text_input("🔑 DataforSEO API Password", type="password")
   if username and password is not None:
       client = RestClient(str(username), str(password))
       # Upload Excel file
