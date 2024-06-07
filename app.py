@@ -377,7 +377,7 @@ def chunk_dataframe(df, chunk_size=1000):
 
 def main():
   setup_streamlit()
-  client = RestClient(str(st.text_input("DataforSEO Login", help="Get your login credentials here: https://app.dataforseo.com/api-dashboard")), str(st.text_input('Please enter your DataforSEO API Password', type="password"))
+  client = RestClient(str(st.text_input("DataforSEO Login", help="Get your login credentials here: https://app.dataforseo.com/api-dashboard")), str(st.text_input('Please enter your DataforSEO API Password', type="password")))
   # Upload Excel file
   uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx", "xls"])
   sorted_countries = custom_sort(COUNTRIES, preferred_countries)
