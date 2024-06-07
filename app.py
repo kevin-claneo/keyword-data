@@ -373,3 +373,6 @@ def main():
               st.subheader("Top 10 SERP Data")
               show_dataframe(top10serp_df)
               download_excel_link(top10serp_df, "top-10_serp_data")
+
+if __name__ == "__main__":
+        main()
